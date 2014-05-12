@@ -1,0 +1,33 @@
+#makefile
+BORLAND=c:\borland\bcc55
+
+STARTUPOBJ=c0x32.obj
+LIBS=import32.lib cw32.lib
+INCLUDEPATH=$(BORLAND)\include;.
+LIBPATH=$(BORLAND)\lib
+CC=$(BORLAND)\bin\bcc32
+LL=$(BORLAND)\bin\ilink32
+TL=$(BORLAND)\bin\tlib
+CFLAGS=-c -w -H=test.csm -I$(INCLUDEPATH) -L$(LIBPATH) -tWC -O2 -g0 -w-8071 -w-8004
+LFLAGS=-ap -Tpe -L$(LIBPATH)
+RFLAGS= -32
+
+OBJ= get.obj maketables.obj pcre.obj study.obj
+
+AllFiles: pcre.lib
+
+get.obj: main.cpp
+    $(CC) $(CFLAGS) get.c
+
+maketables.obj: maketables.c
+    $(CC) $(CFLAGS) maketables.c
+
+pcre.obj: pcre.c
+    $(CC) $(CFLAGS) pcre.c
+
+study.obj: study.c
+    $(CC) $(CFLAGS) study.c
+
+pcre.lib: $(OBJ)
+    $(TL) $(BORLAND)\lib\cw32.lib *calloc *del *strncmp *memcpy *memmove *memset
+    $(TL) pcre.lib +get.obj +maketables.obj +pcre.obj +study.obj +calloc.obj +del.obj +strncmp.obj +memcpy.obj +memmove.obj +memset.obj
