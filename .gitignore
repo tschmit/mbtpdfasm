@@ -1,0 +1,36 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.pdb
+*.log
+*.idf
+*.tlog
+*.tmp
+*.ilk
+*.idb
+*.opensdf
+*.suo
+*.user
+*.sdf
+*.lastbuildstate
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# app specific
+*.pdf
