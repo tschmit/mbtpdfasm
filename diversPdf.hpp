@@ -97,9 +97,10 @@ extern T_keyWord typeKeyWordsValues[];
 //#define _ID      (_cstObjXref + 9)
 #define _ModDate (_cstObjXref + 10)
 #define _Encrypt (_cstObjXref + 11)
+#define __DecodeParms (_cstObjXref + 12)
 
 //constantes pour les filtres
-#define _cstDecode (_cstObjXref + 12)
+#define _cstDecode (_cstObjXref + 13)
 #define _ASCIIHexDecode  (_cstDecode + 1)
 #define _ASCII85Decode   (_cstDecode + 2)
 #define _LZWDecode       (_cstDecode + 3)

@@ -70,8 +70,8 @@ T_keyWord xrefObjKeyWords[] = {
    {"/ID",      _ID,      TYPE_REQUIRED, false, TYPE_ARRAY },
    {"/ModDate", _ModDate, TYPE_REQUIRED, false, TYPE_DATE },
    {"/Encrypt", _Encrypt, TYPE_REQUIRED, false, TYPE_NAME },
+   { "/DecodeParms", __DecodeParms, TYPE_OPTIONAL, false, TYPE_DICTIONARY },
    {(const char *)0, _notAType, 0, 0, _notAType}
-
 };
 
 T_keyWord filterKeyWords[] = {

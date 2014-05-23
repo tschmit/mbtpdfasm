@@ -2,6 +2,7 @@
 #include "pdfXrefTable.hpp"
 #include "diversPdf.hpp"
 #include "zlib.h"
+#include "pdfUtils.hpp"
 #include <stdlib.h>
 
 #ifdef DEBUG_MEM_LEAK
@@ -70,8 +71,9 @@ C_pdfObject::C_pdfObject() {
 C_pdfObject::C_pdfObject(char *pBuf, int lgPBuf, T_keyWord *pKWT, bool loadStream) {
 int lgBufUtil, streamPos, streamLg, pb, j, idKey;
     
+    this->loadStatus = false;    
     this->initVar();
-	this->loadStatus = false;
+	
 
 	if ( pBuf[0] >= '0' &&  pBuf[0] <= '9') {
         if ( (lgBufUtil = findWinBuf("endobj",pBuf, lgPBuf)) == -1) {
@@ -245,7 +247,7 @@ const char *C_pdfObject::getAttrib(int idAttrib) {
 // ATTENTION....... cette fonction alloue de la mémoire.. il faut la libérer;
 char *C_pdfObject::getStream(char *destBuf, int *lgDestBuf, int *lgStream, bool filter) {
 const char *pcc;
-int idKey;
+int idKey, pred, cols, i, j, k;
 
    *lgStream = this->lgStream;
 
@@ -303,7 +305,31 @@ int idKey;
 
                *lgStream = *lgDestBuf - strm.avail_out;
                (void)inflateEnd(&strm);
-               break;
+			   if ((pcc = this->getAttrib(__DecodeParms)) != NULL) {
+				   pred = pdfGetParmValueAsInt("/Predictor", pcc, strlen(pcc));
+				   if (pred > INT_MIN) {
+					   cols = pdfGetParmValueAsInt("/Columns", pcc, strlen(pcc));
+					   switch (pred) {
+					   case 12:						   
+						   for (i = 0; i < cols; i++) {
+							   destBuf[i] = destBuf[i + 1];
+						   }
+						   k = 4;
+						   i++;
+						   while (i < strm.total_out) {
+							   //on zappe l'octet de prédiction
+							   i++;
+							   for (j = 0; j < cols; j++) {
+								   destBuf[k] = destBuf[k - cols] + destBuf[i];
+								   k++; i++;
+							   }
+						   }
+						   break;
+					   }
+				   }
+			   }
+
+			   break;
            default:
                *lgStream = 0;
                break;

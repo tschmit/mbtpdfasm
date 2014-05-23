@@ -100,6 +100,7 @@
     <ClCompile Include="..\pdfNames.cpp" />
     <ClCompile Include="..\pdfObject.cpp" />
     <ClCompile Include="..\pdfString.cpp" />
+    <ClCompile Include="..\pdfUtils.cpp" />
     <ClCompile Include="..\pdfXrefTable.cpp" />
     <ClCompile Include="..\rc4.cpp" />
     <ClCompile Include="..\string.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="..\pdfNames.hpp" />
     <ClInclude Include="..\pdfObject.hpp" />
     <ClInclude Include="..\pdfString.hpp" />
+    <ClInclude Include="..\pdfUtils.hpp" />
     <ClInclude Include="..\pdfXrefTable.hpp" />
     <ClInclude Include="..\rc4.hpp" />
     <ClInclude Include="..\resource.h" />
