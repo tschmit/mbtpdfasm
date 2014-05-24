@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include "pdfString.hpp"
 
-#define LG_TBUF 1050
-#define LG_FBUF 5000
+#define LG_TBUF 2000
+#define LG_FBUF 10000
 
 #define NEW_TABLE_XREF 500
 
@@ -51,6 +51,7 @@ class C_pdfXrefTable {
       inline int getNbObj() {return nbObj;}
 
       inline int getOffSetObj(int i) {if (i < nbObj) return table[i].offSet; return 0;}
+	  inline typeXref* getObjTXR(int i) { if (i < nbObj) return &(table[i]); return NULL;}
       inline int getOffsetObjBeforeEncrypt(int i) {if (i < nbObj) return table[i].offsetBeforeEncrypt; return 0;}
       inline int getCompObj(int i) {if (i < nbObj) return table[i].compObj; return 0;}
       inline int getIndexCompObj(int i) {if (i < nbObj) return table[i].indexCompObj; return 0;}

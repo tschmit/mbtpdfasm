@@ -298,7 +298,8 @@ int idKey, pred, cols, i, j, k;
                       break;
                    }
 
-                   if ( strm.avail_out == 0 ) {
+                   if ( strm.avail_out <= 0 ) {
+					   fprintf(stderr, "erreur de décompression");
                        //il faut agrandir fBuf
                    }
                } while (strm.avail_out == 0);
@@ -314,7 +315,7 @@ int idKey, pred, cols, i, j, k;
 						   for (i = 0; i < cols; i++) {
 							   destBuf[i] = destBuf[i + 1];
 						   }
-						   k = 4;
+						   k = cols;
 						   i++;
 						   while (i < strm.total_out) {
 							   //on zappe l'octet de prédiction

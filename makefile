@@ -14,7 +14,7 @@ CFLAGS=-c -w -I$(INCLUDEPATH) -L$(LIBPATH) -tWC -O2 -DWIN32 -n$(OUT) -w-8071
 LFLAGS=-ap -Tpe -L$(LIBPATH) -x -j$(OUT) -I$(OUT) -Gn
 RFLAGS= -32
 
-OBJ=main.obj listeFichiers.obj pdfXrefTable.obj pdfFile.obj diversPdf.obj pdfString.obj md5.obj rc4.obj strMatcher.obj pdfEncrypt.obj pdfFileOutline.obj pdfNames.obj pdfObject.obj calc.obj
+OBJ=main.obj listeFichiers.obj pdfXrefTable.obj pdfFile.obj diversPdf.obj pdfString.obj md5.obj rc4.obj strMatcher.obj pdfEncrypt.obj pdfFileOutline.obj pdfNames.obj pdfObject.obj calc.obj pdfUtils.obj
 OBJfr=string.obj
 OBJen=stringEn.obj
 OBJzlib = adler32.obj compress.obj crc32.obj deflate.obj gzio.obj infback.obj inffast.obj inflate.obj inftrees.obj trees.obj uncompr.obj zutil.obj

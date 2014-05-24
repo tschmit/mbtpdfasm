@@ -1,7 +1,7 @@
 #include "mpaMain.hpp"
 
-const char *strVersion = "1.0.28";
-const char *strMPAURL = "http://thierry.schmit.free.fr/dev/mbtPdfAsm/mbtPdfAsm2.html";
+const char *strVersion = "1.5.1.1";
+const char *strMPAURL = "https://mbtpdfasm.codeplex.com/";
 
 /* *********************************************************************************************** */
 

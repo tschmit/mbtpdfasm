@@ -111,6 +111,8 @@ typedef T_pageTreeNode *T_pPTN;
 
 class C_pdfFile {
    private:
+      static char* debug_pc;
+
       C_pdfXrefTable *xrefTable;
       openMode mode;
       char nom[LG_NOM]; //nom du fichier

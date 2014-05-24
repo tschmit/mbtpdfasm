@@ -34,6 +34,8 @@ const char *C_pdfFile::pdfMetadataStrName[] = {
 
 /* ***************************************************************************************** */
 
+char *C_pdfFile::debug_pc = 0;
+
 #define LG_PDFNAME_BUF 500
 C_pdfFile::C_pdfFile(char *nom, openMode mode) {
 int i, j, lgObj, lgCatalog, k;
@@ -310,7 +312,8 @@ C_pdfObject *pPdfObj;
          pcc = (char **)C_pdfFile::pdfMetadataStrName;
          j = 0;
          while ( pcc[j] != 0 ) {
-            if ( (i = findWinBuf(pcc[j], fBuf, lgObj)) != -1 ) {
+
+			 if ( (i = findWinBuf(pcc[j], fBuf, lgObj)) != -1 ) {
                i += strlen(pcc[j]);
                while ( fBuf[i] == ' ' )
                   ++i;
@@ -1425,75 +1428,101 @@ int numObjInserted;
       
    orgF = org->getFile();
    orgXT = org->getXrefTable();
-   
-   if ( !orgXT->getOffSetObj(nObj) )
-      return 0;
-   
+
    if ( (i = orgXT->getInserted(nObj)) != 0 )
-      return i; // l'objet a déjà été inséré.
+      return i; // l'objet a déjà été inséré.   
+   
+   if ( !orgXT->getOffSetObj(nObj) ) {
+	   typeXref *ptxr = orgXT->getObjTXR(nObj);
+	   if ( ptxr->compObj != 0 && ptxr->indexCompObj != 0) {
+		   sizeof_fBuf = LG_FBUF * 2;
+		   fBuf = new char[sizeof_fBuf];
+		   if ( fBuf == 0 ) {
+			  return 0;
+		   }
 
-   if ( !this->fullMergeFlag && org->isObjAPage(nObj) ) {
-       //on réserve éventuellement la page.
-       if ( (k = orgXT->getInserted(nObj)) == 0 ) {
-           k = xrefTable->addObj(0, 0, 'f') - 1; // f car on n'est pas sur que la page sera insérée dans le cas d'un script
-           orgXT->setInserted(nObj, k);
-       }
-       return k;
-   }
+		   i = orgXT->getOffSetObj(ptxr->compObj);
+           fseek(orgF, i, SEEK_SET);
+           fread(fBuf, 1, sizeof_fBuf, orgF);
+		   C_pdfObject* pPdfObj = new C_pdfObject(fBuf, sizeof_fBuf, compressedKeyWords, true);
+		   pPdfObj->getObjectFromCompObj(nObj, fBuf, &sizeof_fBuf, &i);
+		   
+		   delete pPdfObj;		   
 
-   // thank you to Sam
-   // mais on a un petit probleme quand même la....
-   if ( orgXT->getStatus(nObj) == 'f' )  {
-      //on réserve un numéro d'objet pour éviter les dead lock
-      numObjInserted = xrefTable->addObj(0, 0, 'n') - 1;
-      orgXT->setInserted(nObj, numObjInserted);
+		   iDebut = 0;
+           iFin = i;
 
-      this->xrefTable->setFreeObject(numObjInserted);
-      return numObjInserted;
-   }
+	   } else {	   
+	       fprintf(stderr, "offset null 3, object : %i !!\r\n", nObj);
+           return 0;      
+	   }
+   } else {
 
-   i = orgXT->getOffSetObj(nObj);
-   if ( i == 0 ) {
-      fprintf(stderr, "offset null 3, object : %i !!\r\n", nObj);
-      return 0;
-   }
-   fseek(orgF, i, SEEK_SET);
-   // chargement de l'objet
-   sizeof_fBuf = LG_FBUF * 2;
-   fBuf = new char[sizeof_fBuf];
-   if ( fBuf == 0 ) {
-      return 0;
-   }
-   posInFile = ftell(orgF);
-   fread(fBuf, 1, sizeof_fBuf, orgF);
-   j = findWinBuf("endobj", fBuf, sizeof_fBuf);
-   while ( j == - 1 ) {
-      pc = new char[sizeof_fBuf * 2];
-      memcpy(pc, fBuf, sizeof_fBuf);
-      fread(&pc[sizeof_fBuf], 1, sizeof_fBuf, orgF);
-      sizeof_fBuf *= 2;
-      delete fBuf;
-      fBuf = pc;
-      j = findWinBuf("endobj", fBuf, sizeof_fBuf);
-   }
-   lgObj = j + 6; // 6 = endobj
-   if ( org->encrypt->isDecryptPossible() ) {
-      i = -1;
-      while ( i == -1 ) {
-         i = org->encrypt->encryptObj(fBuf, lgObj, sizeof_fBuf, false);
-         if ( i == -1 ) {
-            delete fBuf;
-            sizeof_fBuf += 2 * LG_FBUF;
-            fBuf = new char[sizeof_fBuf];
-            fseek(orgF, posInFile, SEEK_SET);
-            fread(fBuf, 1, sizeof_fBuf, orgF);
-         }
-      }
-      lgObj = i;
-   }
-   iDebut = findWinBuf("obj", fBuf, LG_FBUF) + 3;
-   iFin = lgObj - 6;
-   // fin du chargement
+	   if ( !this->fullMergeFlag && org->isObjAPage(nObj) ) {
+		   //on réserve éventuellement la page.
+		   if ( (k = orgXT->getInserted(nObj)) == 0 ) {
+			   k = xrefTable->addObj(0, 0, 'f') - 1; // f car on n'est pas sur que la page sera insérée dans le cas d'un script
+			   orgXT->setInserted(nObj, k);
+		   }
+		   return k;
+	   }
+
+	   // thank you to Sam
+	   // mais on a un petit probleme quand même la....
+	   if ( orgXT->getStatus(nObj) == 'f' )  {
+		  //on réserve un numéro d'objet pour éviter les dead lock
+		  numObjInserted = xrefTable->addObj(0, 0, 'n') - 1;
+		  orgXT->setInserted(nObj, numObjInserted);
+
+		  this->xrefTable->setFreeObject(numObjInserted);
+		  return numObjInserted;
+	   }
+
+	   i = orgXT->getOffSetObj(nObj);
+	   if ( i == 0 ) {
+		  fprintf(stderr, "offset null 3, object : %i !!\r\n", nObj);
+		  return 0;
+	   }
+
+	   fseek(orgF, i, SEEK_SET);
+	   // chargement de l'objet
+	   sizeof_fBuf = LG_FBUF * 2;
+	   fBuf = new char[sizeof_fBuf];
+	   if ( fBuf == 0 ) {
+		  return 0;
+	   }
+	   posInFile = ftell(orgF);
+	   fread(fBuf, 1, sizeof_fBuf, orgF);
+	   j = findWinBuf("endobj", fBuf, sizeof_fBuf);
+	   while ( j == - 1 ) {
+		  pc = new char[sizeof_fBuf * 2];
+		  memcpy(pc, fBuf, sizeof_fBuf);
+		  fread(&pc[sizeof_fBuf], 1, sizeof_fBuf, orgF);
+		  sizeof_fBuf *= 2;
+		  delete fBuf;
+		  fBuf = pc;
+		  j = findWinBuf("endobj", fBuf, sizeof_fBuf);
+	   }
+	   //lgObj = j + 6; // 6 = endobj
+	   if ( org->encrypt->isDecryptPossible() ) {
+		  i = -1;
+		  while ( i == -1 ) {
+			 i = org->encrypt->encryptObj(fBuf, lgObj, sizeof_fBuf, false);
+			 if ( i == -1 ) {
+				delete fBuf;
+				sizeof_fBuf += 2 * LG_FBUF;
+				fBuf = new char[sizeof_fBuf];
+				fseek(orgF, posInFile, SEEK_SET);
+				fread(fBuf, 1, sizeof_fBuf, orgF);
+			 }
+		  }
+		  //lgObj = i;
+	   }
+	   
+	   // fin du chargement
+	   iDebut = findWinBuf("obj", fBuf, sizeof_fBuf) + 3;
+       iFin = findWinBuf("endobj", fBuf, sizeof_fBuf);
+   }   
 
    //détermination du type de l'objet
    i = findWinBuf("/Type", fBuf + iDebut, iFin - iDebut);
@@ -1558,8 +1587,8 @@ int numObjInserted;
             memcpy(pi, iBuf, (sizeof_iBuf - LG_TBUF) * sizeof(int) );
             delete iBuf;
             iBuf = pi;
-         }
-         iBuf[pt++] = insertObj(org, i);
+         }		 
+         iBuf[pt++] = insertObj(org, i);		 
       }
       else {
           //debug
