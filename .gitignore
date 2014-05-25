@@ -34,3 +34,5 @@
 
 # app specific
 *.pdf
+mbtPdfAsm
+makefile
