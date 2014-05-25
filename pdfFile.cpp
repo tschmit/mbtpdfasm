@@ -1445,7 +1445,7 @@ int numObjInserted;
            fseek(orgF, i, SEEK_SET);
            fread(fBuf, 1, sizeof_fBuf, orgF);
 		   C_pdfObject* pPdfObj = new C_pdfObject(fBuf, sizeof_fBuf, compressedKeyWords, true);
-		   pPdfObj->getObjectFromCompObj(nObj, fBuf, &sizeof_fBuf, &i);
+		   fBuf = pPdfObj->getObjectFromCompObj(nObj, fBuf, &sizeof_fBuf, &i);
 		   
 		   delete pPdfObj;		   
 
