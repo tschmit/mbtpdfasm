@@ -987,7 +987,7 @@ int lgRes, lgBuf, j, nObj, r;
       }
    }
 
-   if ( (lgAdd != 0) && (add != 0) ) {
+   /*if ( (lgAdd != 0) && (add != 0) ) {
       switch ( (int)add ) {
       case _Resources:
 
@@ -996,7 +996,7 @@ int lgRes, lgBuf, j, nObj, r;
          memcpy(pc + lgRes, add + sizeof(int), lgAdd);
          lgRes += lgAdd;
       }
-   }
+   }*/
 
    pc[lgRes] = 0;
 
