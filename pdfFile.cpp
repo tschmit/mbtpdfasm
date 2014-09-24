@@ -296,10 +296,26 @@ C_pdfObject *pPdfObj;
       fBuf = this->getObj(rootPages, fBuf, &sizeof_fBuf, &lgObj, &pPdfObj, false);
       i = findWinBuf("/Count", fBuf, sizeof_fBuf);
 	  nbPages = atoi(fBuf + i + 7); // 7 = sizeof("/Count ")
-	  if ( X_X_R.doesStrMatchMask(fBuf + i + 7) ) {
-         fBuf = this->getObj(nbPages, fBuf, &sizeof_fBuf, &lgObj, &pPdfObj, false);
-		 i = findWinBuf("obj", fBuf, sizeof_fBuf);
-	     nbPages = atoi(fBuf + i + 3); // 3 = sizeof("obj")
+	  //tolérance de format: le nombre de pages n'est pas renseigné, on essaie de le déduire. (soumission Pd4ml)
+	  if (nbPages == 0) {
+		  i = findWinBuf("[", fBuf, sizeof_fBuf);
+		  if (i > 0) {
+			  j = findWinBuf("]", fBuf, sizeof_fBuf);
+			  if (j > i) {
+				  k = i;
+				  while (k < j) {
+					  if (fBuf[k++] == 'R')
+						  nbPages++;
+				  }
+			  }
+		  }
+	  }
+	  else {
+		  if (X_X_R.doesStrMatchMask(fBuf + i + 7)) {
+			  fBuf = this->getObj(nbPages, fBuf, &sizeof_fBuf, &lgObj, &pPdfObj, false);
+			  i = findWinBuf("obj", fBuf, sizeof_fBuf);
+			  nbPages = atoi(fBuf + i + 3); // 3 = sizeof("obj")
+		  }
 	  }
 
       /* *********************************** */
@@ -1867,6 +1883,7 @@ int C_pdfFile::buildPagesTree(int nObj, T_pageTreeNode **currentPTN, T_pageTreeN
 int pt, i, type, lgObj;
 char *fBuf;
 int sizeof_fBuf;
+int sizeof_tBuf;
 int *tBuf;
 char *pc;
 C_pdfObject *pPdfObj;
@@ -1993,7 +2010,21 @@ notAType2:
        delete fBuf;
        return 0;
    }
+   //pt = 0;
+   //if (X_X_R.doesStrMatchMask(fBuf + i + 7)) {
+	  // if (X_X_R.getOffsetOfMatchingStr() == 0) {
+		 //  pt = -1;
+	  // }
+   //}
+   //if (pt == 0) {
+	  // pt = atoi(fBuf + i + 7);
+   //}
+   //else {
+	  // //TODO: il faut gérer l'indirection
+	  // pt = 1000; //pages par défaut
+   //}
    pt = atoi(fBuf + i + 7);
+
    i = findWinBuf("/Kids", fBuf, lgObj);
    if ( i == -1 ) {
        if ( pPdfObj )
@@ -2002,7 +2033,8 @@ notAType2:
        return 0;
    }
 
-   tBuf = new int[pt + 1];
+   sizeof_tBuf = pt + 1;
+   tBuf = new int[sizeof_tBuf];
    i += 5;
 
    while ( fBuf[i] <= ' ' )
@@ -2053,10 +2085,18 @@ notAType2:
          while ( (fBuf[i] < '0') || (fBuf[i] > '9') && (fBuf[i] != ']') )
             ++i;
          if ( fBuf[i] == ']' ) break;
-         tBuf[pt++] = atoi(fBuf + i);
+         //tBuf[pt++] = atoi(fBuf + i);
+		 setIntInDynBuf(atoi(fBuf + i), &tBuf, &sizeof_tBuf, pt++);
          while ( (fBuf[i] != 'R') && (fBuf[i] != ']')) i++;
       }
       tBuf[pt] = 0;
+
+	  if (nbPages == 0) {
+		  //il y a eu un bug plus haut type /Count null
+		  nbPages = pt;
+	  }
+
+
       PTN->kids = new T_pPTN[pt];
       memset(PTN->kids, 0, pt * sizeof(T_pPTN));
       PTN->nbKids = pt;
@@ -2078,6 +2118,19 @@ notAType2:
 
    delete fBuf;
    return pt;
+}
+
+void C_pdfFile::setIntInDynBuf(int v, int **buf, int *sizeof_buf, int i) {
+	int* lb;
+
+	if (i >= *sizeof_buf) {
+		*sizeof_buf += 10;
+		lb = new int[*sizeof_buf];
+		memcpy(lb, *buf, (*sizeof_buf) * sizeof(int));
+		delete *buf;
+		*buf = lb;
+	}
+	(*buf)[i] = v;
 }
 
 //**************************************************************************************************

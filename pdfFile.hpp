@@ -237,6 +237,10 @@ class C_pdfFile {
 
       char *mergeDict(T_keyWord *ptkw, C_pdfFile *org1, const char *res1, int lgRes1, const char *res2, int lgRes2, char **, int *);
 
+	  //******
+	  // utilitaires
+	  void setIntInDynBuf(int v, int **buf, int *sizeof_buf, int i);
+
    public:
 
       inline FILE *getFile() {return pf;}
