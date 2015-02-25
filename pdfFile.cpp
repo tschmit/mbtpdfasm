@@ -1003,16 +1003,17 @@ int lgRes, lgBuf, j, nObj, r;
       }
    }
 
-   /*if ( (lgAdd != 0) && (add != 0) ) {
-      switch ( (int)add ) {
+   if ( (lgAdd != 0) && (add != 0) ) {
+      fprintf(stderr, "erreur !!! on ne devrait pas passer ici: pdfFile.cpp 991");
+      /*switch ( (int)add ) {
       case _Resources:
 
          break;
       default:
          memcpy(pc + lgRes, add + sizeof(int), lgAdd);
          lgRes += lgAdd;
-      }
-   }*/
+      }*/
+   }
 
    pc[lgRes] = 0;
 
