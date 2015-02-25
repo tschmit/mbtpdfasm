@@ -13,7 +13,7 @@ ZLIB = $(O)/adler32.o $(O)/compress.o $(O)/crc32.o $(O)/deflate.o $(O)/gzio.o $(
 $(EXENAME): $(LF) $(ZLIB)
 	$(CC) $(LF) $(ZLIB) -o $@
 $(O)/main.o: main.cpp
-	$(CC) -c main.cpp -o $*.o
+	$(CC) $(options) -c main.cpp -o $*.o
 $(O)/pdfUtils.o: pdfUtils.cpp
 	$(CC) -c pdfUtils.cpp -o $*.o
 $(O)/pdfFile.o: pdfFile.cpp
@@ -21,13 +21,13 @@ $(O)/pdfFile.o: pdfFile.cpp
 $(O)/pdfObject.o: pdfObject.cpp
 	$(CC) $(options) -c pdfObject.cpp -o $*.o
 $(O)/pdfEncrypt.o: pdfEncrypt.cpp
-	$(CC) -c pdfEncrypt.cpp -o $*.o
+	$(CC) $(options) -c pdfEncrypt.cpp -o $*.o
 $(O)/pdfNames.o: pdfNames.cpp
-	$(CC) -c pdfNames.cpp -o $*.o
+	$(CC) $(options) -c pdfNames.cpp -o $*.o
 $(O)/pdfFileOutline.o: pdfFileOutline.cpp
-	$(CC) -c pdfFileOutline.cpp -o $*.o
+	$(CC) $(options) -c pdfFileOutline.cpp -o $*.o
 $(O)/pdfXrefTable.o: pdfXrefTable.cpp
-	$(CC) -c pdfXrefTable.cpp -o $*.o
+	$(CC) $(options) -c pdfXrefTable.cpp -o $*.o
 $(O)/string.o: string.cpp
 	$(CC) -c string.cpp -o $*.o
 $(O)/pdfString.o: pdfString.cpp
@@ -37,9 +37,9 @@ $(O)/rc4.o: rc4.cpp
 $(O)/md5.o: md5.c
 	$(CC) -c md5.c -o $*.o
 $(O)/listeFichiers_linux.o: listeFichiers_linux.cpp
-	$(CC) -c listeFichiers_linux.cpp -o $*.o
+	$(CC) $(options) -c listeFichiers_linux.cpp -o $*.o
 $(O)/diversPdf.o: diversPdf.cpp
-	$(CC) -c diversPdf.cpp -o $*.o
+	$(CC) $(options) -c diversPdf.cpp -o $*.o
 $(O)/strMatcher.o: strMatcher.cpp
 	$(CC)  -c strMatcher.cpp -o $*.o
 $(O)/pcre.o: pcre.c
